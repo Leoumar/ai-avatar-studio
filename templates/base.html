@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <meta name="description" content="{{ tagline }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+</head>
+<body data-page="{{ page }}">
+
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">{{ app_name }}</span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <a href="/" class="{% if page == 'home' %}is-current{% endif %}">Home</a>
+      <a href="/#studio">Create avatar</a>
+      <a href="/history" class="{% if page == 'history' %}is-current{% endif %}">History</a>
+      <a href="/about" class="{% if page == 'about' %}is-current{% endif %}">About</a>
+    </nav>
+
+    <div class="topbar-actions">
+      {% if auth_enabled %}
+        <a class="btn btn-quiet" href="/login" data-auth="signed-out">Log in</a>
+        <a class="btn btn-solid" href="/signup" data-auth="signed-out">Sign up</a>
+        <button class="btn btn-quiet" type="button" id="logout-button" data-auth="signed-in" hidden>Log out</button>
+      {% else %}
+        <span class="pill" title="Set AUTH_ENABLED=true in .env to turn accounts on">Accounts off</span>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if mock_mode %}
+  <div class="banner" role="status">
+    Mock mode is on. Generations are simulated and return a placeholder video — no GPU is used.
+  </div>
+  {% endif %}
+
+  <main class="page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>{{ app_name }} — {{ tagline }}</p>
+    <p class="footer-note">Only upload images and voices you have permission to use.</p>
+  </footer>
+
+  <div id="toast" class="toast" role="alert" aria-live="assertive" hidden></div>
+
+  <script>
+    window.APP_CONFIG = {
+      authEnabled: {{ 'true' if auth_enabled else 'false' }},
+      mockMode: {{ 'true' if mock_mode else 'false' }},
+      qualities: {{ qualities | tojson }},
+      maxScriptChars: {{ max_script_chars }},
+      maxImageMb: {{ max_image_mb }},
+      maxVoiceMb: {{ max_voice_mb }},
+      minDuration: {{ min_duration }},
+      maxDuration: {{ max_duration }},
+      wordsPerMinute: {{ words_per_minute }}
+    };
+  </script>
+  <script src="/static/js/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

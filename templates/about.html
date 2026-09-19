@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}About — {{ app_name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <h1>About {{ app_name }}</h1>
+  <p>{{ tagline }}</p>
+</section>
+
+<section class="prose">
+  <h2>How a video is made</h2>
+  <p>
+    You provide three things: a photo of a person, a short recording of a voice, and the
+    script you want spoken. Two AI models do the rest.
+  </p>
+
+  <ol class="flow">
+    <li>
+      <h3>CosyVoice</h3>
+      <p>Reads your script in the voice from your sample recording and returns an audio track.</p>
+    </li>
+    <li>
+      <h3>SoulX-Flash Lite</h3>
+      <p>Animates your photo against that audio track — lip movement, facial expression and timing —
+         and renders an MP4.</p>
+    </li>
+  </ol>
+
+  <p>
+    Both models run on RunPod Serverless GPUs, so nothing heavy runs on the web server.
+    Generation happens as a background job: the page gets a job id straight away and then
+    polls for progress, which is why you can watch the stages tick over.
+  </p>
+
+  <h2>Where your files go</h2>
+  <p>
+    Images, voice samples, generated audio and finished videos are stored in a private
+    Supabase Storage bucket. The database keeps only paths, job ids and status. Files are
+    served back through this application, so the bucket itself is never public.
+  </p>
+
+  <h2>Permission matters</h2>
+  <p>
+    A synthetic video of someone saying words they never said can cause real harm. Only
+    upload a face and a voice that are yours, or that you have clear permission to use, and
+    be honest with your audience that the result is AI-generated. The confirmation checkbox
+    on the generator is there for a reason, not as decoration.
+  </p>
+
+  <h2>Built with</h2>
+  <ul class="stack">
+    <li><b>Backend</b> FastAPI, Uvicorn, Pydantic, HTTPX</li>
+    <li><b>Frontend</b> HTML, CSS and vanilla JavaScript — no framework</li>
+    <li><b>Data</b> Supabase (PostgreSQL + Storage)</li>
+    <li><b>GPU</b> RunPod Serverless</li>
+  </ul>
+</section>
+
+{% endblock %}

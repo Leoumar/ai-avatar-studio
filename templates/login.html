@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Log in — {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="authwrap">
+  <div class="authcard">
+    <h1>Log in</h1>
+    <p class="authsub">Sign in to see your videos and generate new ones.</p>
+
+    {% if not auth_enabled %}
+      <p class="note">Accounts are turned off. Set <code>AUTH_ENABLED=true</code> in your
+         <code>.env</code> file to use this page.</p>
+    {% endif %}
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="Your password">
+    </div>
+
+    <button type="button" class="btn btn-solid btn-block" id="login-submit"
+            {% if not auth_enabled %}disabled{% endif %}>Log in</button>
+
+    <p class="error-text" id="auth-error" hidden></p>
+    <p class="authalt">No account yet? <a href="/signup">Create one</a></p>
+  </div>
+</section>
+{% endblock %}

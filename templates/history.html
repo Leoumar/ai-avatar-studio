@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}History — {{ app_name }}{% endblock %}
+
+{% block content %}
+
+<section class="pagehead">
+  <h1>Your videos</h1>
+  <p>Every avatar video you have generated, newest first.</p>
+</section>
+
+<section class="history" id="history-root">
+  <p class="loading" id="history-loading">Loading your videos…</p>
+
+  <div class="history-grid" id="history-grid" hidden></div>
+
+  <div class="empty" id="history-empty" hidden>
+    <h2>No videos yet</h2>
+    <p>Generate your first talking avatar and it will appear here.</p>
+    <a class="btn btn-solid" href="/#studio">Create a video</a>
+  </div>
+</section>
+
+{% endblock %}

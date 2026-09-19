@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Sign up — {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="authwrap">
+  <div class="authcard">
+    <h1>Create your account</h1>
+    <p class="authsub">Your generations stay in your own history.</p>
+
+    {% if not auth_enabled %}
+      <p class="note">Accounts are turned off. Set <code>AUTH_ENABLED=true</code> in your
+         <code>.env</code> file to use this page.</p>
+    {% endif %}
+
+    <div class="field">
+      <label for="full-name">Full name</label>
+      <input type="text" id="full-name" autocomplete="name" placeholder="Your name">
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="new-password" placeholder="At least 8 characters">
+    </div>
+
+    <button type="button" class="btn btn-solid btn-block" id="signup-submit"
+            {% if not auth_enabled %}disabled{% endif %}>Create account</button>
+
+    <p class="error-text" id="auth-error" hidden></p>
+    <p class="authalt">Already have an account? <a href="/login">Log in</a></p>
+  </div>
+</section>
+{% endblock %}

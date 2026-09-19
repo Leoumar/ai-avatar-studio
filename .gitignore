@@ -1,0 +1,22 @@
+# Secrets - never commit
+.env
+
+# Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local fallback storage and temp files
+storage/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

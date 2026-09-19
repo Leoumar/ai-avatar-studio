@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}{{ app_name }} — {{ tagline }}{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-copy">
+    <h1>Create AI talking avatar videos</h1>
+    <p>Upload an image, provide a sample voice, enter your script, and generate a realistic
+       talking avatar video with AI.</p>
+    <div class="hero-actions">
+      <a class="btn btn-solid btn-lg" href="#studio">Create video</a>
+      <a class="btn btn-quiet btn-lg" href="/history">View history</a>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="wave">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <p class="hero-visual-caption">image + voice → talking video</p>
+  </div>
+</section>
+
+
+<!-- ================= GENERATOR ================= -->
+<section id="studio" class="studio">
+
+  <!-- LEFT: the five steps -->
+  <div class="steps" id="steps-panel">
+
+    <!-- Step 1: image -->
+    <section class="step" aria-labelledby="step1-title">
+      <div class="step-head">
+        <span class="step-num">1</span>
+        <div>
+          <h2 id="step1-title">Upload avatar image</h2>
+          <p class="step-sub">A clear, front-facing photo of one person works best.</p>
+        </div>
+      </div>
+
+      <div class="drop" id="image-drop" tabindex="0" role="button"
+           aria-label="Upload avatar image. Drag and drop, or press Enter to browse.">
+        <p class="drop-main">Drag an image here</p>
+        <p class="drop-sub">JPG, PNG or WEBP · up to {{ max_image_mb }} MB</p>
+        <span class="btn btn-outline">Browse image</span>
+        <input type="file" id="image-input" accept=".jpg,.jpeg,.png,.webp,image/*" hidden>
+      </div>
+
+      <div class="filecard" id="image-card" hidden>
+        <img id="image-preview" class="filecard-thumb" alt="Preview of the uploaded avatar image">
+        <div class="filecard-meta">
+          <p class="filecard-name" id="image-name"></p>
+          <p class="filecard-size" id="image-size"></p>
+        </div>
+        <button type="button" class="btn btn-quiet btn-sm" id="image-remove">Remove</button>
+      </div>
+    </section>
+
+    <!-- Step 2: voice -->
+    <section class="step" aria-labelledby="step2-title">
+      <div class="step-head">
+        <span class="step-num">2</span>
+        <div>
+          <h2 id="step2-title">Upload sample voice</h2>
+          <p class="step-sub">10–30 seconds of clean speech gives the best clone.</p>
+        </div>
+      </div>
+
+      <div class="drop" id="voice-drop" tabindex="0" role="button"
+           aria-label="Upload voice sample. Drag and drop, or press Enter to browse.">
+        <p class="drop-main">Drag an audio file here</p>
+        <p class="drop-sub">WAV, MP3 or M4A · up to {{ max_voice_mb }} MB</p>
+        <span class="btn btn-outline">Browse audio</span>
+        <input type="file" id="voice-input" accept=".wav,.mp3,.m4a,audio/*" hidden>
+      </div>
+
+      <div class="filecard filecard-audio" id="voice-card" hidden>
+        <div class="filecard-meta">
+          <p class="filecard-name" id="voice-name"></p>
+          <p class="filecard-size" id="voice-size"></p>
+          <audio id="voice-player" controls preload="metadata"></audio>
+        </div>
+        <button type="button" class="btn btn-quiet btn-sm" id="voice-remove">Remove</button>
+      </div>
+    </section>
+
+    <!-- Step 3: script -->
+    <section class="step" aria-labelledby="step3-title">
+      <div class="step-head">
+        <span class="step-num">3</span>
+        <div>
+          <h2 id="step3-title">What should your avatar say?</h2>
+          <p class="step-sub">Write it the way you want it spoken, punctuation included.</p>
+        </div>
+      </div>
+
+      <label class="sr-only" for="script-input">Script</label>
+      <textarea id="script-input" class="script" rows="7"
+                maxlength="{{ max_script_chars }}"
+                placeholder="Enter the script you want your avatar to speak..."></textarea>
+
+      <div class="counters">
+        <span>Words: <b id="word-count">0</b></span>
+        <span>Characters: <b id="char-count">0</b> / {{ max_script_chars }}</span>
+        <span>Estimated duration: <b id="estimate">00:00</b></span>
+      </div>
+    </section>
+
+    <!-- Step 4: duration -->
+    <section class="step" aria-labelledby="step4-title">
+      <div class="step-head">
+        <span class="step-num">4</span>
+        <div>
+          <h2 id="step4-title">Video duration</h2>
+          <p class="step-sub">How long the finished video should run.</p>
+        </div>
+      </div>
+
+      <div class="chips" id="duration-chips" role="radiogroup" aria-label="Video duration">
+        <button type="button" class="chip" role="radio" aria-checked="false" data-seconds="15">15 sec</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-seconds="30">30 sec</button>
+        <button type="button" class="chip is-active" role="radio" aria-checked="true" data-seconds="60">1 min</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-seconds="120">2 min</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-seconds="180">3 min</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-seconds="300">5 min</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-seconds="custom">Custom</button>
+      </div>
+
+      <div class="custom-duration" id="custom-duration" hidden>
+        <label for="custom-value">Enter duration</label>
+        <input type="number" id="custom-value" min="1" step="1" value="45">
+        <select id="custom-unit">
+          <option value="seconds" selected>seconds</option>
+          <option value="minutes">minutes</option>
+        </select>
+      </div>
+
+      <p class="note" id="duration-note" hidden></p>
+    </section>
+
+    <!-- Step 5: quality -->
+    <section class="step" aria-labelledby="step5-title">
+      <div class="step-head">
+        <span class="step-num">5</span>
+        <div>
+          <h2 id="step5-title">Video quality</h2>
+          <p class="step-sub">Higher resolutions take longer on the GPU.</p>
+        </div>
+      </div>
+
+      <label class="sr-only" for="quality-select">Video quality</label>
+      <select id="quality-select" class="select">
+        {% for q in qualities %}
+        <option value="{{ q }}" {% if q == '720p' %}selected{% endif %}>{{ q }}</option>
+        {% endfor %}
+      </select>
+    </section>
+  </div>
+
+  <!-- RIGHT: summary, consent, generate -->
+  <aside class="sidecar">
+    <div class="sidecar-inner">
+
+      <!-- Ready state -->
+      <div id="panel-form">
+        <h2 class="sidecar-title">Your video</h2>
+
+        <dl class="summary">
+          <div><dt>Avatar image</dt><dd id="sum-image">Not selected</dd></div>
+          <div><dt>Voice sample</dt><dd id="sum-voice">Not selected</dd></div>
+          <div><dt>Script</dt><dd id="sum-script">Empty</dd></div>
+          <div><dt>Duration</dt><dd id="sum-duration">1 min</dd></div>
+          <div><dt>Quality</dt><dd id="sum-quality">720p</dd></div>
+        </dl>
+
+        <label class="consent">
+          <input type="checkbox" id="consent-input">
+          <span>I confirm that I have permission to use this image and voice for
+                AI-generated content.</span>
+        </label>
+
+        <button type="button" class="btn btn-solid btn-block btn-lg" id="generate-button" disabled>
+          Generate AI video
+        </button>
+        <p class="hint" id="generate-hint">Add an image, a voice, a script and your confirmation to start.</p>
+      </div>
+
+      <!-- Working state -->
+      <div id="panel-progress" hidden>
+        <h2 class="sidecar-title">Creating your AI video</h2>
+
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar">
+          <span class="bar-fill" id="bar-fill"></span>
+        </div>
+        <p class="bar-label"><b id="progress-percent">0%</b> · <span id="progress-stage">Preparing generation</span></p>
+
+        <ol class="stagelist" id="stagelist">
+          <li data-stage="Uploading files">Uploading files</li>
+          <li data-stage="Generating speech">Generating speech</li>
+          <li data-stage="Processing avatar">Processing avatar</li>
+          <li data-stage="Applying lip-sync">Applying lip-sync</li>
+          <li data-stage="Rendering video">Rendering video</li>
+          <li data-stage="Finalizing video">Finalizing</li>
+        </ol>
+
+        <p class="hint">Keep this page open while the video renders.</p>
+      </div>
+
+      <!-- Result state -->
+      <div id="panel-result" hidden>
+        <h2 class="sidecar-title">Your video is ready</h2>
+
+        <video id="result-video" class="result-video" controls playsinline></video>
+
+        <dl class="summary">
+          <div><dt>Duration</dt><dd id="result-duration">—</dd></div>
+          <div><dt>Quality</dt><dd id="result-quality">—</dd></div>
+          <div><dt>Created</dt><dd id="result-date">—</dd></div>
+        </dl>
+
+        <a class="btn btn-solid btn-block" id="download-button" href="#" download>Download video</a>
+        <button type="button" class="btn btn-outline btn-block" id="again-button">Generate another video</button>
+      </div>
+
+      <!-- Failure state -->
+      <div id="panel-error" hidden>
+        <h2 class="sidecar-title">Generation failed</h2>
+        <p class="error-text" id="error-text"></p>
+        <button type="button" class="btn btn-solid btn-block" id="retry-button">Back to the form</button>
+      </div>
+
+    </div>
+  </aside>
+</section>
+
+{% endblock %}
