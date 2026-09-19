@@ -32,6 +32,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
 RUN python -c "from huggingface_hub import snapshot_download; snapshot_download('FunAudioLLM/CosyVoice2-0.5B', local_dir='pretrained_models/CosyVoice2-0.5B')"
 
 WORKDIR /app
-COPY handler.py /app/handler.py
+# Build context is the repo root, so the handler lives in the cosyvoice-worker/ subfolder
+COPY cosyvoice-worker/handler.py /app/handler.py
 
 CMD ["python", "-u", "/app/handler.py"]
